@@ -65,6 +65,7 @@ flutter:
   assets:
     - assets/Images/Login page background.jpg
     - assets/Images/home_page.jfif
+    - assets/Images/Counter app background.png
        #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
