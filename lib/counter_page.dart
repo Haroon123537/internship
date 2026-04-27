@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:internship/shared_prefereneces_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CounterPage extends StatefulWidget {
   const CounterPage({super.key});
@@ -9,20 +11,52 @@ class CounterPage extends StatefulWidget {
 
 class _CounterPageState extends State<CounterPage> {
 
+  SharedPreferenecesHelper _preferenecesHelper= SharedPreferenecesHelper();
+
    int count=0;
 
-  // The function for a counter app
-   void increment(){
-    setState(() {
-       count++;
-    });
-   }
+   void loadCounter() async {
+  final prefs = await SharedPreferences.getInstance();
 
-   void decrement(){
-    setState(() {
-      count--;
-    });
-   }
+  int savedValue = prefs.getInt('counter') ?? 0;
+
+  print("Loaded value: $savedValue");
+
+  setState(() {
+    count = prefs.getInt('counter') ?? 0;
+  });
+
+}
+
+@override
+void initState() {
+  super.initState();
+  loadCounter(); // load saved value when app starts
+}
+
+
+
+  // The function for a counter app
+   void increment() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  setState(() {
+    count++;
+  });
+
+  await prefs.setInt('counter', count);
+  print("Saved value: $count"); // save value
+}
+
+   void decrement() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  setState(() {
+    count--;
+  });
+
+  await prefs.setInt('counter', count); // save value
+}
 
   @override
   Widget build(BuildContext context) {

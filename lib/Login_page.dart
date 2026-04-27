@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'home_page.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'packagpe:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,20 +22,19 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
-   void ValidatingEmail(){
-    final bool isValid= EmailValidator.validate(email.text.trim());
-   
-   if(isValid){
-   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("Your Email is valid"))
-   );
-   }
-   else{
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Your email is not valid"))
-    );
-   }
-   } 
+  void ValidatingEmail() {
+    final bool isValid = EmailValidator.validate(email.text.trim());
+
+    if (isValid) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Your Email is valid")));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Your email is not valid")));
+    }
+  }
 
   //Login in
   Future<bool> LoginWithEmailAndPassword(
@@ -263,8 +263,7 @@ class _LoginPageState extends State<LoginPage> {
                             ? null // disable button when loading
                             : () async {
                                 if (formkey.currentState!.validate()) {
-
-                                   ValidatingEmail();
+                                  ValidatingEmail();
                                   setState(() {
                                     isloading = true;
                                   });
@@ -284,8 +283,14 @@ class _LoginPageState extends State<LoginPage> {
                                   });
 
                                   if (success) {
+                                    final prefs =
+                                        await SharedPreferences.getInstance();
+
+                                    await prefs.setBool("isLoggedIn", true);
+
                                     Navigator.pushReplacement(
                                       context,
+
                                       MaterialPageRoute(
                                         builder: (context) => HomePage(),
                                       ),

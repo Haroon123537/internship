@@ -4,12 +4,14 @@ class Todo {
   String id;
   String todoText;
   bool isDone;
+  String? taskTime;
 
   Todo({
-    required this.id,
-    required this.todoText,
-    this.isDone = false,
-  });
+  required this.id,
+  required this.todoText,
+  this.isDone = false,
+  this.taskTime,
+});
 
   // 🔥 Convert Todo → Map
   Map<String, dynamic> toJson() {
@@ -17,6 +19,7 @@ class Todo {
       'id': id,
       'todoText': todoText,
       'isDone': isDone,
+      'taskTime': taskTime,
     };
   }
 
@@ -26,6 +29,7 @@ class Todo {
       id: json['id'],
       todoText: json['todoText'],
       isDone: json['isDone'],
+      taskTime: json['taskTime'],
     );
   }
 }
