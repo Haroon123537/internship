@@ -18,12 +18,12 @@ class _LoginPageState extends State<LoginPage> {
   bool isloading = false;
   bool isHidden = true;
 
-  TextEditingController username = TextEditingController();
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
+  //TextEditingController username = TextEditingController();
+  TextEditingController emailcontroller = TextEditingController();
+  TextEditingController passwordcontroller = TextEditingController();
 
   void ValidatingEmail() {
-    final bool isValid = EmailValidator.validate(email.text.trim());
+    final bool isValid = EmailValidator.validate(emailcontroller.text.trim());
 
     if (isValid) {
       ScaffoldMessenger.of(
@@ -33,6 +33,23 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Your email is not valid")));
+    }
+  }
+
+  Future<void> forgetpassword(BuildContext context) async{
+    final email= emailcontroller.text.trim();
+
+    if(email.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter your email")));
+      return;
+
+    }
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password reset email sent")));
+
+    }catch(e){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -104,56 +121,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     SizedBox(height: 40),
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                        controller: username,
-                        keyboardType: TextInputType.name,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          hintText: 'Enter your  name',
-                          labelText: 'User name',
-                          labelStyle: TextStyle(
-                            //color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                          suffixIcon: Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.amberAccent,
-                              style: BorderStyle.solid,
-                              width: 2.0,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.black54,
-                              style: BorderStyle.solid,
-                              width: 2.0,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return "Enter your name please";
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                    ),
-
+                    
                     SizedBox(height: 35),
 
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: email,
+                        controller: emailcontroller,
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           filled: true,
@@ -199,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
-                        controller: password,
+                        controller: passwordcontroller,
                         obscureText: isHidden,
                         keyboardType: TextInputType.visiblePassword,
                         decoration: InputDecoration(
@@ -271,8 +245,8 @@ class _LoginPageState extends State<LoginPage> {
                                   bool success =
                                       await LoginWithEmailAndPassword(
                                         context,
-                                        email.text.trim(),
-                                        password.text.trim(),
+                                        emailcontroller.text.trim(),
+                                        passwordcontroller.text.trim(),
                                       );
 
                                   // wait 3 seconds (optional)
@@ -323,7 +297,9 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 25),
 
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                         forgetpassword(context);
+                      },
                       child: Text(
                         'Forget your password!! ',
                         style: TextStyle(color: Colors.amberAccent),
