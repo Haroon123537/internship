@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:internship/profile_page.dart';
 import 'home_page.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,7 @@ class _LoginPageState extends State<LoginPage> {
   final formkey = GlobalKey<FormState>();
   bool isloading = false;
   bool isHidden = true;
+   bool isTextLoading = false;
 
   //TextEditingController username = TextEditingController();
   TextEditingController emailcontroller = TextEditingController();
@@ -36,20 +38,24 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> forgetpassword(BuildContext context) async{
-    final email= emailcontroller.text.trim();
+  Future<void> forgetpassword(BuildContext context) async {
+    final email = emailcontroller.text.trim();
 
-    if(email.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please enter your email")));
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Please enter your email")));
       return;
-
     }
-    try{
+    try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password reset email sent")));
-
-    }catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Password reset email sent")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
@@ -84,18 +90,16 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/Images/Login page background.jpg"),
-            fit: BoxFit.cover,
-          ),
+          gradient: LinearGradient(colors: [Colors.black, Colors.blueGrey]),
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(65.0),
             child: Container(
               width: 400,
 
               decoration: BoxDecoration(
+                boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black26)],
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(20.0),
                 border: Border.all(
@@ -111,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     SizedBox(height: 30),
                     Text(
-                      'Login/Sign up',
+                      'Login/Sign in',
 
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -121,8 +125,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     SizedBox(height: 40),
+
                     
-                    SizedBox(height: 35),
 
                     SizedBox(
                       width: 350,
@@ -168,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
-                    SizedBox(height: 50),
+                    SizedBox(height: 30),
 
                     SizedBox(
                       width: 350,
@@ -266,7 +270,7 @@ class _LoginPageState extends State<LoginPage> {
                                       context,
 
                                       MaterialPageRoute(
-                                        builder: (context) => HomePage(),
+                                        builder: (context) => const HomePage()
                                       ),
                                     );
                                   }
@@ -294,11 +298,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
-                    SizedBox(height: 25),
+                    SizedBox(height: 20),
 
                     TextButton(
                       onPressed: () {
-                         forgetpassword(context);
+                        forgetpassword(context);
                       },
                       child: Text(
                         'Forget your password!! ',
@@ -311,6 +315,37 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ),
+                    SizedBox(height: 15),
+                    TextButton(
+                      onPressed: isTextLoading
+                        ? null
+                        : () async {
+                            setState(() {
+                              isTextLoading = true;
+                            });
+
+                            await Future.delayed(Duration(seconds: 3));
+
+                            Navigator.pushNamed(context, '/signup');
+
+                            setState(() {
+                              isTextLoading = false;
+                            });
+                          },
+                      child: isTextLoading
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            "Don't have an account? Sign up here!! ",
+                            style: TextStyle(color: Colors.amberAccent, fontSize: 16),
+                          ),
                     ),
                   ],
                 ),

@@ -41,10 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        leading: IconButton(
-          onPressed: () {},
-          icon: Icon(Icons.arrow_back_sharp, color: Colors.white),
-        ),
+        
         title: Text("Profile Screen"),
         titleTextStyle: TextStyle(
           fontWeight: FontWeight.bold,
@@ -52,8 +49,64 @@ class _ProfilePageState extends State<ProfilePage> {
           fontSize: 22,
           letterSpacing: 2.3,
         ),
+        actions: [
+          IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.home, color: Colors.white,)
+            ),
+            SizedBox(
+              width: 20,
+            ),
+          IconButton(
+            onPressed: (){}, 
+            icon: Icon(Icons.logout, color: Colors.white,)
+            ),
+            SizedBox(
+              width: 20,
+            )
+        ],
       ),
-
+      drawer: Drawer(
+        backgroundColor: Colors.white,
+        child: ListView(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                "Menu",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text("Home"),
+              onTap: () {
+                Navigator.pushNamed(context, '/home');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.login),
+              title: Text("Login"),
+              onTap: () {
+                Navigator.pushNamed(context, '/login');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.app_registration),
+              title: Text("Sign Up"),
+              onTap: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+            ),
+          ],
+        ),
+      ),
       body: userData == null
           ? errorMessage.isNotEmpty
                 ? Center(child: Text(errorMessage))
