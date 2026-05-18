@@ -1,7 +1,10 @@
+
 import 'package:flutter/material.dart';
-import 'todo.dart';
-import 'shared_preferences_help.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:internship/todo_provider.dart';
+import 'package:provider/provider.dart';
+//import 'todo.dart';
+//import 'shared_preferences_help.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class TodoListApp extends StatefulWidget {
   const TodoListApp({super.key});
@@ -12,63 +15,31 @@ class TodoListApp extends StatefulWidget {
 
 class _TodoListAppState extends State<TodoListApp> {
 
-  SharedPreferenecesHelp _preferenecesHelper= SharedPreferenecesHelp();
+  //SharedPreferenecesHelp _preferenecesHelper= SharedPreferenecesHelp();
 
-  final List<Todo> todos = [];
+  //final List<Todo> todos = [];
   final TextEditingController _controller = TextEditingController();
+  //final provider =Provider.of<TodoProvider>(context);
 
   @override
 void initState() {
   super.initState();
-  _loadTodos();
+  Future.microtask(() {
+  Provider.of<TodoProvider>(
+    context,
+    listen: false,
+  ).loadTodos();
+});
+ // _loadTodos();
 }
 
-void _loadTodos() async {
-  final data = await _preferenecesHelper.loadTodos();
 
-  setState(() {
-    todos.clear();
-    todos.addAll(data);
-  });
-}
-
-  // ✅ Add Task
- void _addTask() async {
-  if (_controller.text.isEmpty) return;
-
-  setState(() {
-    todos.add(
-      Todo(
-        id: DateTime.now().toString(),
-        todoText: _controller.text,
-      ),
-    );
-  });
-
-  await _preferenecesHelper.saveTodos(todos); // 🔥 SAVE
-  _controller.clear();
-}
-
-  // ✅ Delete Task
-  void _deleteTask(String id) async {
-  setState(() {
-    todos.removeWhere((item) => item.id == id);
-  });
-
-  await _preferenecesHelper.saveTodos(todos); // 🔥 SAVE
-}
-
-  // ✅ Toggle Complete
-  void _toggleDone(Todo todo) async {
-  setState(() {
-    todo.isDone = !todo.isDone;
-  });
-
-  await _preferenecesHelper.saveTodos(todos); // 🔥 SAVE
-}
 
   @override
   Widget build(BuildContext context) {
+    final provider =
+      Provider.of<TodoProvider>(context);
+    
     return Scaffold(
       backgroundColor: Colors.grey[200],
 
@@ -96,7 +67,14 @@ void _loadTodos() async {
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: _addTask,
+                  onPressed: () {
+
+  provider.addTask(
+    _controller.text,
+  );
+
+  _controller.clear();
+},
                   child: const Text("Add"),
                 )
               ],
@@ -106,9 +84,9 @@ void _loadTodos() async {
           // 🔹 List of Tasks
           Expanded(
             child: ListView.builder(
-              itemCount: todos.length,
+              itemCount: provider.todos.length,
               itemBuilder: (context, index) {
-                final todo = todos[index];
+                final todo = provider.todos[index];
 
                 return Container(
                   margin: const EdgeInsets.symmetric(
@@ -116,7 +94,7 @@ void _loadTodos() async {
                   child: ListTile(
                     tileColor: Colors.white,
 
-                    // ✅ Mark complete
+                    
                     leading: IconButton(
                       icon: Icon(
                         todo.isDone
@@ -124,10 +102,10 @@ void _loadTodos() async {
                             : Icons.check_box_outline_blank,
                         color: Colors.blue,
                       ),
-                      onPressed: () => _toggleDone(todo),
+                      onPressed: () => provider.toggleDone(todo)
                     ),
 
-                    // ✅ Text
+                   
                     title: Text(
                       todo.todoText,
                       style: TextStyle(
@@ -137,10 +115,10 @@ void _loadTodos() async {
                       ),
                     ),
 
-                    // ✅ Delete
+                    
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteTask(todo.id),
+                      onPressed: () => provider.deleteTask(todo.id)
                     ),
                   ),
                 );

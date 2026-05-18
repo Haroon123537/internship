@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:internship/home_page.dart';
 import 'package:internship/sign_up.dart';
+import 'package:internship/todo_provider.dart';
+import 'package:provider/provider.dart';
 import 'Login_page.dart';
 import 'firebase_options.dart';
 import 'counter_page.dart';
@@ -16,7 +18,12 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+  create: (context) => TodoProvider(),
+  child: const MyApp(),
+),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -27,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      initialRoute: '/todo',
       routes: {
         '/profile': (context) => const ProfilePage(),
         '/api': (context) => const ApiIntegration(),
