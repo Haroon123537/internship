@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:internship/shared_preferences_help.dart';
+import 'package:internship/todo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 import 'Login_page.dart';
 import 'counter_page.dart';
-import 'todo.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart';
+//import 'todo.dart';
 import 'todo_list_app.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class TaskManagerApp extends StatefulWidget {
   const TaskManagerApp({super.key});
@@ -25,21 +29,16 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
   String searchText = "";
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
-  final List<Todo> todos = [];
+  //final List<Todo> todos = [];
 
-  void _loadTodos() async {
-    final data = await _preferenecesHelper.loadTodos();
-
-    setState(() {
-      todos.clear();
-      todos.addAll(data);
-    });
-  }
-
+  @override
   @override
   void initState() {
     super.initState();
-    _loadTodos();
+
+    Future.microtask(() {
+      Provider.of<TaskProvider>(context, listen: false).loadTodos();
+    });
   }
 
   @override
@@ -49,44 +48,9 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
     super.dispose();
   }
 
-  void _addTask() async {
-    if (_controller.text.isEmpty) return;
-
-    setState(() {
-      todos.add(
-        Todo(
-          id: DateTime.now().toString(),
-          todoText: _controller.text,
-          taskTime: _timeController.text,
-        ),
-      );
-    });
-
-    await _preferenecesHelper.saveTodos(todos); // 🔥 SAVE
-    _controller.clear();
-    _timeController.clear();
-  }
-
-  // ✅ Delete Task
-  void _deleteTask(String id) async {
-    setState(() {
-      todos.removeWhere((item) => item.id == id);
-    });
-
-    await _preferenecesHelper.saveTodos(todos); // 🔥 SAVE
-  }
-
-  // ✅ Toggle Complete
-  void _toggleDone(Todo todo) async {
-    setState(() {
-      todo.isDone = !todo.isDone;
-    });
-
-    await _preferenecesHelper.saveTodos(todos); // 🔥 SAVE
-  }
-
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<TaskProvider>(context);
     return Scaffold(
       appBar: AppBar(
         clipBehavior: Clip.antiAlias,
@@ -121,7 +85,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
               await Future.delayed(Duration(seconds: 1));
 
-              _addTask();
+              provider.addTask(_controller.text, _timeController.text);
 
               setState(() => isHomeLoading = false);
             },
@@ -140,7 +104,10 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                 : Icon((Icons.search), color: Colors.white),
 
             onPressed: () {
-              showSearch(context: context, delegate: TaskSearchDelegate(todos));
+              showSearch(
+                context: context,
+                delegate: TaskSearchDelegate(provider.todos),
+              );
             },
             hoverColor: Colors.white24,
             focusColor: Colors.black,
@@ -179,10 +146,10 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                       child: ListView.builder(
                         shrinkWrap: true,
 
-                        itemCount: todos.length,
+                        itemCount: provider.todos.length,
 
                         itemBuilder: (context, index) {
-                          final todo = todos[index];
+                          final todo = provider.todos[index];
 
                           return ListTile(
                             title: Text(todo.todoText),
@@ -190,7 +157,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                             subtitle: Text(todo.taskTime ?? ""),
 
                             onTap: () {
-                              _deleteTask(todo.id);
+                              provider.deleteTask(todo.id);
 
                               Navigator.pop(context);
                             },
@@ -392,7 +359,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
                       await Future.delayed(Duration(seconds: 1));
 
-                      _addTask();
+                      provider.addTask(_controller.text, _timeController.text);
 
                       setState(() {
                         isAddingTask = false;
@@ -419,9 +386,9 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
-              itemCount: todos.length,
+              itemCount: provider.todos.length,
               itemBuilder: (context, index) {
-                final todo = todos[index];
+                final todo = provider.todos[index];
 
                 return Center(
                   child: Container(
@@ -430,7 +397,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 15),
 
                     child: ListTile(
-                      onTap: () => _toggleDone(todo),
+                      onTap: () => provider.toggleDone(todo),
                       contentPadding: EdgeInsets.symmetric(
                         vertical: 10,
                         horizontal: 16,
@@ -452,7 +419,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                           color: Colors.blue,
                         ),
 
-                        onPressed: () => _toggleDone(todo),
+                        onPressed: () => provider.toggleDone(todo),
                       ),
 
                       title: Text(
@@ -474,7 +441,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
                           await Future.delayed(Duration(seconds: 2));
 
-                          _deleteTask(todo.id);
+                          provider.deleteTask(todo.id);
 
                           setState(() {
                             deletingTaskId = null;
