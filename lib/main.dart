@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/task',
+      initialRoute: '/login',
       routes: {
         '/profile': (context) => const ProfilePage(),
         '/api': (context) => const ApiIntegration(),
