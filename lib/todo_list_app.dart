@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:internship/todo_provider.dart';
+import 'todo_provider.dart';
 import 'package:provider/provider.dart';
 //import 'todo.dart';
 //import 'shared_preferences_help.dart';
@@ -51,7 +51,7 @@ void initState() {
       body: Column(
         children: [
 
-          // 🔹 Input Field
+          
           Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
@@ -81,7 +81,7 @@ void initState() {
             ),
           ),
 
-          // 🔹 List of Tasks
+          
           Expanded(
             child: ListView.builder(
               itemCount: provider.todos.length,

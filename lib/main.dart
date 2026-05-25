@@ -5,7 +5,7 @@ import 'package:internship/home_page.dart';
 import 'package:internship/sign_up.dart';
 //import 'package:internship/todo_provider.dart';
 import 'package:provider/provider.dart';
-import 'todo_provider.dart';
+import 'task_provider.dart';
 import 'Login_page.dart';
 import 'firebase_options.dart';
 import 'counter_page.dart';
@@ -21,7 +21,7 @@ void main() async {
   );
   runApp(
     ChangeNotifierProvider(
-  create: (context) => TodoProvider(),
+  create: (context) => TaskProvider(),
   child: const MyApp(),
 ),);
 }
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/home',
+      initialRoute: '/signup',
       routes: {
         '/profile': (context) => const ProfilePage(),
         '/api': (context) => const ApiIntegration(),

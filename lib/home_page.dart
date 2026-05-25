@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  @override
   void initState() {
     super.initState();
 
@@ -78,7 +79,7 @@ class _HomePageState extends State<HomePage>
             elevation: 3.0,
             shadowColor: Colors.black87,
             actions: [
-              // TASK BUTTON
+              
               IconButton(
                 tooltip: "Task Manager",
 
@@ -107,6 +108,8 @@ class _HomePageState extends State<HomePage>
                         await Future.delayed(Duration(seconds: 3));
 
                         Navigator.push(
+                          
+                          // ignore: use_build_context_synchronously
                           context,
                           MaterialPageRoute(
                             builder: (context) => const TaskManagerApp(),
@@ -121,7 +124,7 @@ class _HomePageState extends State<HomePage>
 
               SizedBox(width: 18),
 
-              // TODO BUTTON
+              
               IconButton(
                 tooltip: "Todo List",
 
@@ -150,6 +153,7 @@ class _HomePageState extends State<HomePage>
                         await Future.delayed(Duration(seconds: 3));
 
                         Navigator.push(
+                          // ignore: use_build_context_synchronously
                           context,
                           MaterialPageRoute(
                             builder: (context) => const TodoListApp(),
@@ -164,7 +168,7 @@ class _HomePageState extends State<HomePage>
 
               SizedBox(width: 18),
 
-              // LOGOUT BUTTON
+              
               IconButton(
                 tooltip: "Logout",
 
@@ -194,6 +198,7 @@ class _HomePageState extends State<HomePage>
 
                         await FirebaseAuth.instance.signOut();
 
+                        // ignore: use_build_context_synchronously
                         Navigator.pushNamed(context, '/login');
 
                         setState(() {
@@ -271,69 +276,67 @@ class _HomePageState extends State<HomePage>
               );
             },
 
-            child: Container(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: Column(
-                      children: [
-                        SizedBox(height: 70),
-
-                        Text(
-                          ' Welcome to the Glamourous',
-                          style: TextStyle(
-                            fontSize: 45,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 2.0,
-                          ),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 70),
+            
+                      Text(
+                        ' Welcome to the Glamourous',
+                        style: TextStyle(
+                          fontSize: 45,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 2.0,
                         ),
-                        SizedBox(height: 30),
-                        Text(
-                          name,
-                          style: TextStyle(fontSize: 30, color: Colors.white),
-                        ),
-                        SizedBox(height: 15),
-                        Text(
-                          email,
-                          style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),
-                        SizedBox(height: 30),
-                        ScaleTransition(
-                          scale: _bounceAnimation,
-                          child: ElevatedButton(
-                            onPressed: getData,
-                            child: Text(
-                              'Click here to create',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      ),
+                      SizedBox(height: 30),
+                      Text(
+                        name,
+                        style: TextStyle(fontSize: 30, color: Colors.white),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        email,
+                        style: TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                      SizedBox(height: 30),
+                      ScaleTransition(
+                        scale: _bounceAnimation,
+                        child: ElevatedButton(
+                          onPressed: getData,
+                          style: ElevatedButton.styleFrom(
+                            shadowColor: Colors.black87,
+                            elevation: 5,
+                            //outlineColor: Colors.white,
+                            overlayColor: Colors.white24,
+                            foregroundColor: Colors.blue,
+                            backgroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 20,
                             ),
-                            style: ElevatedButton.styleFrom(
-                              shadowColor: Colors.black87,
-                              elevation: 5,
-                              //outlineColor: Colors.white,
-                              overlayColor: Colors.white24,
-                              foregroundColor: Colors.blue,
-                              backgroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 30,
-                                vertical: 20,
-                              ),
-                              textStyle: TextStyle(
-                                fontFamily: 'Roboto',
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            textStyle: TextStyle(
+                              fontFamily: 'Roboto',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          child: Text(
+                            'Click here to create',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

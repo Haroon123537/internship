@@ -1,7 +1,8 @@
-import 'package:firebase_core/firebase_core.dart';
+// ignore: file_names
+
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:internship/profile_page.dart';
 import 'home_page.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,6 +52,7 @@ void dispose() {
   super.dispose();
 }
 
+  // ignore: non_constant_identifier_names
   void ValidatingEmail() {
     final bool isValid = EmailValidator.validate(emailcontroller.text.trim());
 
@@ -77,16 +79,19 @@ void dispose() {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text("Password reset email sent")));
     } catch (e) {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
   //Login in
+  // ignore: non_constant_identifier_names
   Future<bool> LoginWithEmailAndPassword(
     BuildContext context,
     String email,
@@ -99,12 +104,14 @@ void dispose() {
       );
 
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text("Login Successfully")));
 
       return true;
     } catch (e) {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
 
