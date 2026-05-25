@@ -11,12 +11,18 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   bool isTaskLoading = false;
   bool isTodoLoading = false;
   bool isLogoutLoading = false;
+  late Animation<double> _bounceAnimation;
   String name = '';
   String email = '';
+  bool animate = false;
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
   void getData() async {
     User? user = FirebaseAuth.instance.currentUser;
     var vari = await FirebaseFirestore.instance
@@ -31,214 +37,306 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
-    getData();
+
+    _controller = AnimationController(
+      vsync: this,
+
+      duration: Duration(seconds: 4),
+    )..repeat(reverse: true);
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(-1.5, 0),
+      end: Offset(0, 0),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(_controller);
+
+    _controller.forward();
+    _bounceAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.3,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
+      home: Hero(
+        tag: "home_icon",
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.blue,
 
-          elevation: 3.0,
-          shadowColor: Colors.black87,
-          actions: [
-            // TASK BUTTON
-            IconButton(
-              tooltip: "Task Manager",
+            elevation: 3.0,
+            shadowColor: Colors.black87,
+            actions: [
+              // TASK BUTTON
+              IconButton(
+                tooltip: "Task Manager",
 
-              icon: isTaskLoading
-                  ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Icon(Icons.task_alt),
-
-              color: Colors.white,
-              iconSize: 24,
-              hoverColor: Colors.white24,
-
-              onPressed: isTaskLoading
-                  ? null
-                  : () async {
-                      setState(() {
-                        isTaskLoading = true;
-                      });
-
-                      await Future.delayed(Duration(seconds: 3));
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TaskManagerApp(),
+                icon: isTaskLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
                         ),
-                      );
+                      )
+                    : Icon(Icons.task_alt),
 
-                      setState(() {
-                        isTaskLoading = false;
-                      });
-                    },
-            ),
+                color: Colors.white,
+                iconSize: 24,
+                hoverColor: Colors.white24,
 
-            SizedBox(width: 18),
+                onPressed: isTaskLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isTaskLoading = true;
+                        });
 
-            // TODO BUTTON
-            IconButton(
-              tooltip: "Todo List",
+                        await Future.delayed(Duration(seconds: 3));
 
-              icon: isTodoLoading
-                  ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Icon(Icons.check_circle_outline),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TaskManagerApp(),
+                          ),
+                        );
 
-              color: Colors.white,
-              iconSize: 24,
-              hoverColor: Colors.white24,
+                        setState(() {
+                          isTaskLoading = false;
+                        });
+                      },
+              ),
 
-              onPressed: isTodoLoading
-                  ? null
-                  : () async {
-                      setState(() {
-                        isTodoLoading = true;
-                      });
+              SizedBox(width: 18),
 
-                      await Future.delayed(Duration(seconds: 3));
+              // TODO BUTTON
+              IconButton(
+                tooltip: "Todo List",
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const TodoListApp(),
+                icon: isTodoLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
                         ),
-                      );
+                      )
+                    : Icon(Icons.check_circle_outline),
 
-                      setState(() {
-                        isTodoLoading = false;
-                      });
-                    },
-            ),
+                color: Colors.white,
+                iconSize: 24,
+                hoverColor: Colors.white24,
 
-            SizedBox(width: 18),
+                onPressed: isTodoLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isTodoLoading = true;
+                        });
 
-            // LOGOUT BUTTON
-            IconButton(
-              tooltip: "Logout",
+                        await Future.delayed(Duration(seconds: 3));
 
-              icon: isLogoutLoading
-                  ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Icon(Icons.logout),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TodoListApp(),
+                          ),
+                        );
 
-              color: Colors.white,
-              iconSize: 24,
-              hoverColor: Colors.white24,
-
-              onPressed: isLogoutLoading
-                  ? null
-                  : () async {
-                      setState(() {
-                        isLogoutLoading = true;
-                      });
-
-                      await Future.delayed(Duration(seconds: 3));
-
-                      await FirebaseAuth.instance.signOut();
-
-                      Navigator.pushNamed(context, '/login');
-
-                      setState(() {
-                        isLogoutLoading = false;
-                      });
-                    },
-            ),
-
-            SizedBox(width: 15),
-          ],
-        ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-                child: Text(
-                  'Menu',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                  ),
-                ),
+                        setState(() {
+                          isTodoLoading = false;
+                        });
+                      },
               ),
-              ListTile(
-                leading: Icon(Icons.home),
-                title: Text('Home'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/home');
-                },
+
+              SizedBox(width: 18),
+
+              // LOGOUT BUTTON
+              IconButton(
+                tooltip: "Logout",
+
+                icon: isLogoutLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Icon(Icons.logout),
+
+                color: Colors.white,
+                iconSize: 24,
+                hoverColor: Colors.white24,
+
+                onPressed: isLogoutLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          isLogoutLoading = true;
+                        });
+
+                        await Future.delayed(Duration(seconds: 3));
+
+                        await FirebaseAuth.instance.signOut();
+
+                        Navigator.pushNamed(context, '/login');
+
+                        setState(() {
+                          isLogoutLoading = false;
+                        });
+                      },
               ),
-              ListTile(
-                leading: Icon(Icons.task_alt),
-                title: Text('Tasks Management'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/task');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.api),
-                title: Text('ToDo List'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/todo');
-                },
-              ),
+
+              SizedBox(width: 15),
             ],
           ),
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Colors.indigo, Colors.lightBlue]),
-          ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Column(
+          drawer: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
               children: [
-                SizedBox(height: 70),
-
-                Text(
-                  ' Welcome to the Glamourous',
-                  style: TextStyle(
-                    fontSize: 45,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 2.0,
+                DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.blue),
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ),
-                SizedBox(height: 30),
-                Text(name, style: TextStyle(fontSize: 30, color: Colors.white)),
-                SizedBox(height: 15),
-                Text(
-                  email,
-                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ListTile(
+                  leading: Icon(Icons.home),
+                  title: Text('Home'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/home');
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.task_alt),
+                  title: Text('Tasks Management'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/task');
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.api),
+                  title: Text('ToDo List'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/todo');
+                  },
                 ),
               ],
+            ),
+          ),
+          body: AnimatedBuilder(
+            animation: _controller,
+
+            builder: (context, child) {
+              return Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+
+                    end: Alignment.bottomRight,
+
+                    colors: [
+                      Color.lerp(
+                        Colors.blue,
+                        Colors.purple,
+                        _controller.value,
+                      )!,
+
+                      Color.lerp(
+                        Colors.black,
+                        Colors.indigo,
+                        _controller.value,
+                      )!,
+                    ],
+                  ),
+                ),
+
+                child: child,
+              );
+            },
+
+            child: Container(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 70),
+
+                        Text(
+                          ' Welcome to the Glamourous',
+                          style: TextStyle(
+                            fontSize: 45,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 2.0,
+                          ),
+                        ),
+                        SizedBox(height: 30),
+                        Text(
+                          name,
+                          style: TextStyle(fontSize: 30, color: Colors.white),
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          email,
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                        SizedBox(height: 30),
+                        ScaleTransition(
+                          scale: _bounceAnimation,
+                          child: ElevatedButton(
+                            onPressed: getData,
+                            child: Text(
+                              'Click here to create',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              shadowColor: Colors.black87,
+                              elevation: 5,
+                              //outlineColor: Colors.white,
+                              overlayColor: Colors.white24,
+                              foregroundColor: Colors.blue,
+                              backgroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 20,
+                              ),
+                              textStyle: TextStyle(
+                                fontFamily: 'Roboto',
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
